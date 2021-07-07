@@ -1,0 +1,2 @@
+jmespath==0.10.0
+dnspython==2.1.0

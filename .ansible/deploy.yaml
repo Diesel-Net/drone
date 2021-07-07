@@ -1,0 +1,5 @@
+# ansible-playbook deploy.yaml -i inventory/prod/hosts --vault-id ~/.tokens/master_id
+
+- hosts: drone
+  roles:
+    - setup
