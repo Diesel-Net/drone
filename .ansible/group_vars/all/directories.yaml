@@ -1,0 +1,9 @@
+directories_home: /home/{{ ansible_user }}
+directories_app_data: '{{ directories_home }}/.diesel/{{ env_codename }}'
+directories_temp: /usr/share/tmp
+directories_drone_data: '{{ directories_app_data }}/data'
+directories_drone_runner: '{{ directories_app_data }}/runner'
+directories_drone_runner_env: '{{ directories_drone_runner }}/env'
+directories_drone_runner_git: '{{ directories_drone_runner }}/git'
+directories_drone_runner_git_ssh: '{{ directories_drone_runner }}/git/.ssh'
+directories_drone_docker: '{{ directories_app_data }}/docker'

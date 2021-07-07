@@ -1,0 +1,20 @@
+- name: Sync repositories
+  uri:
+    method: POST
+    url: https://{{ proxy_domain_external }}/api/user/repos
+    status_code:
+    - 200
+    headers:
+      Authorization: Bearer {{ github_pat }}
+  register: result
+
+- set_fact:
+    synced_repos: '{{ result | json_query("json[*].name") | sort }}'
+- debug:
+    var: synced_repos
+
+- name: Activate and configure repositories
+  include_tasks: handler.yaml
+  loop: '{{ drone_repos }}'
+  loop_control:
+    loop_var: repo

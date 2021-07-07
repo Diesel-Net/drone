@@ -1,0 +1,4 @@
+- include_tasks: handler.yaml
+  loop: '{{ drone_repos }}'
+  loop_control:
+    loop_var: repo

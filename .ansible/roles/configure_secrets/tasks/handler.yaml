@@ -1,0 +1,47 @@
+- name: 'Get current secret names for {{ repo.name }}'
+  uri:
+    method: GET
+    url: https://{{ proxy_domain_external }}/api/repos/{{ github_owner }}/{{ repo.name }}/secrets
+    return_content: yes
+    status_code:
+    - 200
+    headers:
+      Authorization: Bearer {{ github_pat }}
+  register: result
+
+- set_fact:
+    secrets_current: '{{ result | json_query("{url: url, names: json[*].name}") }}'
+
+- name: Delete secrets for {{ repo.name }}
+  uri:
+    method: DELETE
+    url: '{{ secrets_current.url }}/{{ secret_name }}'
+    return_content: yes
+    status_code:
+    - 204
+    headers:
+      Authorization: Bearer {{ github_pat }}
+  loop: '{{ secrets_current.names }}'
+  loop_control:
+    loop_var: secret_name
+
+- name: Create secrets for {{ repo.name }}
+  uri:
+    method: POST
+    url: https://{{ proxy_domain_external }}/api/repos/{{ github_owner }}/{{ repo.name }}/secrets
+    body_format: 'json'
+    body: |
+      {
+        "name": "{{ secret.name }}",
+        "data": "{{ secret.data }}",
+        "pull_request":  {{ secret.pull_request | bool }}
+      }
+    return_content: yes
+    status_code:
+    - 200
+    headers:
+      Authorization: Bearer {{ github_pat }}
+  loop: '{{ repo.secrets }}'
+  loop_control:
+    loop_var: secret
+  ignore_errors: yes

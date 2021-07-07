@@ -1,0 +1,7 @@
+docker_stack: drone
+docker_network: diesel_net
+
+docker_environment: 
+  REQUESTS_CA_BUNDLE: /etc/ssl/certs/
+  SSL_CERT_FILE: /etc/ssl/certs/
+  WEBSOCKET_CLIENT_CA_BUNDLE: /etc/ssl/certs/
