@@ -1,31 +1,27 @@
 # ansible-playbook deploy.yaml -i inventory/prod/hosts --vault-id ~/.tokens/master_id
 
 - hosts: drone
+  roles:
+    - common
+    
   tasks:
+    - include_role:
+        name: common
+        tasks_from: make_data_dir
 
-    - name: Create directories
-      file:
-        path: '{{ item }}'
-        state: directory
-        owner: '{{ ansible_user }}'
-        group: '{{ ansible_user }}'
-        mode: '0740'
-      with_items:
-      - '{{ directories_drone_docker }}'
-      - '{{ directories_drone_data }}'
-      - '{{ directories_drone_runner }}'
-      - '{{ directories_drone_runner_env }}'
-      - '{{ directories_drone_runner_git }}'
-      become: yes
+    - include_role:
+        name: common
+        tasks_from: make_config_dir
 
-    - name: Create ssh directory {{ directories_drone_runner_git_ssh }} with special permissions
+    - name: Ensure ssh directory exists
       file:
-        path: '{{ directories_drone_runner_git_ssh }}'
         state: directory
-        owner: 'root'
-        group: 'root'
+        path: '{{ config_dir }}/.ssh'
         mode: '0700'
+        owner: root
+        group: root
       become: yes
+
 
     - name: Copy over Drone Runner .env file for use in Drone steps and plugin containers
       copy:
@@ -33,7 +29,9 @@
           ANSIBLE_CONFIG=.ansible/ansible.cfg
           REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
           TZ=America/Los_Angeles
-        dest: '{{ directories_drone_runner_env }}/drone.env'
+        dest: '{{ config_dir }}/drone.env'
+        owner: root
+        group: root
         mode: '0644'
       become: yes
 
@@ -44,7 +42,7 @@
             StrictHostKeyChecking no
             User git
             IdentityFile /root/.ssh/id_rsa_github
-        dest: '{{ directories_drone_runner_git_ssh }}/config'
+        dest: '{{ config_dir }}/.ssh/config'
         owner: root
         group: root
         mode: '0644'
@@ -53,24 +51,15 @@
     - name: Copy over Drone Runner ssh private key file for use in Drone steps and plugin containers
       copy:
         content: '{{ automation_id_rsa }}'
-        dest: '{{ directories_drone_runner_git_ssh }}/id_rsa_github'
+        dest: '{{ config_dir }}/.ssh/id_rsa_github'
         owner: root
         group: root
         mode: '0600'
       become: yes
 
-    - name: Render the {{ directories_drone_docker }}/docker-compose.yaml template
-      template:
-        src: ./templates/docker-compose.yaml.j2
-        dest: '{{ directories_drone_docker }}/docker-compose.yaml'
-        owner: '{{ ansible_user }}'
-        group: '{{ ansible_user }}'
-        mode: '0740'
-
-    - name: Deploy {{ docker_stack }} stack
-      command: docker stack deploy --prune -c docker-compose.yaml {{ docker_stack }}
-      args:
-        chdir: '{{ directories_drone_docker }}'
+    - include_role:
+        name: docker
+        tasks_from: stack_deploy
 
     - name: Pause for 10 seconds
       pause:
