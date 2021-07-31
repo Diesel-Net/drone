@@ -14,7 +14,7 @@ steps:
     environment:
       ANSIBLE_CONFIG: .ansible/ansible.cfg
     settings:
-      galaxy: .ansible/roles/requirments.yaml
+      galaxy: .ansible/roles/requirements.yaml
       requirements: .ansible/files/requirements.txt
       playbook: .ansible/deploy.yaml
       inventory: .ansible/inventory/production/hosts
