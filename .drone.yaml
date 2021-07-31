@@ -1,5 +1,6 @@
 kind: pipeline
-name: default
+type: docker
+name: Install/Update drone CI Server
 
 steps:
 
@@ -8,39 +9,13 @@ steps:
     commands:
       - git clone --depth=1 --branch=stable git@github.com:Diesel-Net/drone-inventory.git .ansible/inventory
 
-  - name: activate repositories
+  - name: Deploy
     image: plugins/ansible:3
     environment:
       ANSIBLE_CONFIG: .ansible/ansible.cfg
     settings:
       requirements: .ansible/files/requirements.txt
-      playbook: .ansible/configure_repositories.yaml
-      inventory: .ansible/inventory/production/hosts
-      private_key:
-        from_secret: automation_id_rsa
-      vault_password:
-        from_secret: ansible_vault_password
-
-  - name: update secrets
-    image: plugins/ansible:3
-    environment:
-      ANSIBLE_CONFIG: .ansible/ansible.cfg
-    settings:
-      requirements: .ansible/files/requirements.txt
-      playbook: .ansible/configure_secrets.yaml
-      inventory: .ansible/inventory/production/hosts
-      private_key:
-        from_secret: automation_id_rsa
-      vault_password:
-        from_secret: ansible_vault_password
-
-  - name: update cron jobs
-    image: plugins/ansible:3
-    environment:
-      ANSIBLE_CONFIG: .ansible/ansible.cfg
-    settings:
-      requirements: .ansible/files/requirements.txt
-      playbook: .ansible/configure_cron.yaml
+      playbook: .ansible/deploy.yaml
       inventory: .ansible/inventory/production/hosts
       private_key:
         from_secret: automation_id_rsa

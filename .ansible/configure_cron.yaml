@@ -1,5 +1,0 @@
-# ansible-playbook configure_cron_jobs.yaml -i inventory/prod/hosts --vault-id ~/.tokens/vault.txt
-
-- hosts: drone
-  roles:
-    - configure_cron
