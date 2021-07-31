@@ -1,5 +1,0 @@
-directories_home: /home/{{ ansible_user }}
-directories_app_data: '{{ directories_home }}/.diesel/{{ codename }}'
-directories_temp: /usr/share/tmp
-directories_drone_data: '{{ directories_app_data }}/data'
-directories_drone_runner: '{{ directories_app_data }}/runner'
