@@ -40,7 +40,7 @@ steps:
       ANSIBLE_CONFIG: .ansible/ansible.cfg
     settings:
       requirements: .ansible/files/requirements.txt
-      playbook: .ansible/configure_cron_jobs.yaml
+      playbook: .ansible/configure_cron.yaml
       inventory: .ansible/inventory/production/hosts
       private_key:
         from_secret: ansible_private_key
