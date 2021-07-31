@@ -17,7 +17,7 @@ steps:
       playbook: .ansible/configure_repositories.yaml
       inventory: .ansible/inventory/production/hosts
       private_key:
-        from_secret: ansible_private_key
+        from_secret: automation_id_rsa
       vault_password:
         from_secret: ansible_vault_password
 
@@ -30,7 +30,7 @@ steps:
       playbook: .ansible/configure_secrets.yaml
       inventory: .ansible/inventory/production/hosts
       private_key:
-        from_secret: ansible_private_key
+        from_secret: automation_id_rsa
       vault_password:
         from_secret: ansible_vault_password
 
@@ -43,7 +43,7 @@ steps:
       playbook: .ansible/configure_cron.yaml
       inventory: .ansible/inventory/production/hosts
       private_key:
-        from_secret: ansible_private_key
+        from_secret: automation_id_rsa
       vault_password:
         from_secret: ansible_vault_password
 
