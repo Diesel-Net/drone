@@ -11,10 +11,10 @@ services:
     - DRONE_GITHUB_CLIENT_SECRET={{ github_client_secret }}
     - DRONE_GITHUB_SERVER=https://{{ github_server }}
     - DRONE_LOGS_COLOR=true
-    - DRONE_LOGS_DEBUG={{ env_debug }}
+    - DRONE_LOGS_DEBUG=false
     - DRONE_LOGS_PRETTY=true
     - DRONE_LOGS_TEXT=true
-    - DRONE_LOGS_TRACE={{ env_debug }}
+    - DRONE_LOGS_TRACE=false
     - DRONE_REPOSITORY_FILTER={{ github_owner }}
     - DRONE_RPC_SECRET=drone_runner_secret
     - DRONE_SERVER_HOST={{ proxy_domain_external }}
@@ -42,9 +42,9 @@ services:
 
       - traefik.http.routers.drone.middlewares=proxy-chain@docker, external-redirect@docker
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-    - {{ directories_drone_data }}/:/data/
-    - /etc/ssl/certs/:/etc/ssl/certs/
+    - '{{ docker_socket }}:/var/run/docker.sock'
+    - '{{ data_dir }}/:/data/'
+    - '{{ ssl_cert_dir }}/:/etc/ssl/certs/'
     - /etc/localtime:/etc/localtime
     networks:
     - {{ docker_network }}
@@ -53,14 +53,14 @@ services:
   administration:
     image: drone/drone-admit-members
     environment:
-    - DRONE_DEBUG={{ env_debug }}
+    - DRONE_DEBUG=false
     - DRONE_SECRET={{ drone_administration_secret }}
     - DRONE_GITHUB_TOKEN={{ github_pat }}
     - DRONE_GITHUB_TEAM={{ github_team }}
     - DRONE_GITHUB_ORG={{ github_owner }}
     - DRONE_GITHUB_ENDPOINT=https://{{ github_api }}
     volumes:
-    - /etc/ssl/certs/:/etc/ssl/certs/
+    - '{{ ssl_cert_dir }}/:/etc/ssl/certs/'
     networks:
       private_net:
         aliases:
@@ -69,16 +69,16 @@ services:
   runner:
     image: drone/drone-runner-docker:1.6
     environment:
-    - DRONE_DEBUG={{ env_debug }}
-    - DRONE_RPC_DUMP_HTTP={{ env_debug }}
+    - DRONE_DEBUG=false
+    - DRONE_RPC_DUMP_HTTP=false
     - DRONE_RPC_HOST={{ proxy_domain_external }}
     - DRONE_RPC_PROTO=https
     - DRONE_RPC_SECRET=drone_runner_secret
     - DRONE_RUNNER_CAPACITY=4
     - DRONE_RUNNER_NAME=Runner
-    - DRONE_RUNNER_VOLUMES=/etc/ssl/certs/:/etc/ssl/certs/,{{ directories_drone_runner_git_ssh }}:/root/.ssh,/var/run/docker.sock:/var/run/docker.sock
+    - DRONE_RUNNER_VOLUMES=/etc/ssl/certs/:/etc/ssl/certs/,{{ config_dir }}/.ssh:/root/.ssh,{{ docker_socket }}:/var/run/docker.sock
     - DRONE_RUNNER_ENV_FILE=/etc/drone.env
-    - DRONE_TRACE={{ env_debug }}
+    - DRONE_TRACE=false
     deploy:
       replicas: 1
       update_config:
@@ -86,11 +86,11 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-    - /etc/ssl/certs/:/etc/ssl/certs/
+    - '{{ docker_socket }}:/var/run/docker.sock'
+    - '{{ ssl_cert_dir }}/:/etc/ssl/certs/'
     - /etc/localtime:/etc/localtime
-    - '{{ directories_drone_runner_env }}/drone.env:/etc/drone.env'
-    - '{{ directories_drone_runner_git_ssh }}:/root/.ssh'
+    - '{{ config_dir }}/drone.env:/etc/drone.env'
+    - '{{ config_dir }}/.ssh:/root/.ssh'
     networks:
     - {{ docker_network }}
 

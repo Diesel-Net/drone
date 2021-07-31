@@ -1,2 +1,4 @@
+.ansible/roles/common
+.ansible/roles/docker
 **/.DS_Store
 external
