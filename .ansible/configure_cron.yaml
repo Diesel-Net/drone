@@ -2,4 +2,4 @@
 
 - hosts: drone
   roles:
-    - configure_cron_jobs
+    - configure_cron
