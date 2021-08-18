@@ -22,6 +22,7 @@ services:
     - DRONE_USER_CREATE=username:{{ drone_username }},machine:false,admin:true,token:{{ github_pat }}
     - DRONE_ADMISSION_PLUGIN_ENDPOINT=http://drone_administration:3000
     - DRONE_ADMISSION_PLUGIN_SECRET={{ drone_administration_secret }}
+    - DRONE_CRON_INTERVAL=5m
     deploy:
       replicas: 1
       update_config:
@@ -79,6 +80,7 @@ services:
     - DRONE_RUNNER_VOLUMES=/etc/ssl/certs/:/etc/ssl/certs/,{{ config_dir }}/.ssh:/root/.ssh,{{ docker_socket }}:/var/run/docker.sock
     - DRONE_RUNNER_ENV_FILE=/etc/drone.env
     - DRONE_TRACE=false
+    - DRONE_CRON_INTERVAL=5m
     deploy:
       replicas: 1
       update_config:
