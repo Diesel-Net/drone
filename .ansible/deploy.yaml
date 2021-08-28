@@ -61,10 +61,6 @@
         name: docker
         tasks_from: stack_deploy
 
-    - name: Pause for 10 seconds
-      pause:
-        seconds: 10
-
     - name: Wait for https://{{ proxy_domain_external }}/welcome to be found
       uri:
         method: GET

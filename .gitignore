@@ -2,3 +2,4 @@
 .ansible/roles/docker
 **/.DS_Store
 external
+venv
