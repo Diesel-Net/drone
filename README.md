@@ -4,13 +4,7 @@
 Automated deployments of Drone CI
 
 ## requirements
-- apt
-  - python3
-  - python3-pip
-  - python3-venv
-- pip
-  - ansible-core 2.11
-- git
+  - ansible-core 2.11+
 
 ## Deploy Drone for the 1st time
 
