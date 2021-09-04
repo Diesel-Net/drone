@@ -1,5 +1,3 @@
-[![Build Status](https://drone.kiwi-labs.net/api/badges/Diesel-Net/drone/status.svg)](https://drone.kiwi-labs.net/Diesel-Net/drone)
-
 # drone
 Drone CI on Docker Swarm.
 
