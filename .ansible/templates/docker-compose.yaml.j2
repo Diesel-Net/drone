@@ -34,6 +34,10 @@ services:
         - traefik.http.services.drone.loadbalancer.server.port=80
         - traefik.http.routers.drone.tls.certresolver=step-ca
         - traefik.http.routers.drone.rule=Host(`{{ proxy_domain_internal }}`,`{{ proxy_domain_external }}`)
+
+        # only request cert with internal domain as main
+        - traefik.http.routers.drone.tls.domains[0].main={{ proxy_domain_internal }}
+        - traefik.http.routers.drone.tls.domains[0].sans={{ proxy_domain_internal }}
         
         - traefik.http.middlewares.proxy-chain.ipwhitelist.sourcerange={{ trusted_ips | join(",") }}
         #- traefik.http.middlewares.proxy-chain.ipwhitelist.ipstrategy.depth=3
