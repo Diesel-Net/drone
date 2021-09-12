@@ -4,25 +4,25 @@ services:
   server:
     image: docker.nexus.diesel.net/drone-nolimit:2.1.0
     environment:
-    - DRONE_AGENTS_ENABLED=true
-    - DRONE_DATABASE_SECRET={{ drone_database_secret }}
-    - DRONE_GIT_ALWAYS_AUTH=true # Needed in order to git clone in a pipeline step
-    - DRONE_GITHUB_CLIENT_ID={{ github_client_id }}
-    - DRONE_GITHUB_CLIENT_SECRET={{ github_client_secret }}
-    - DRONE_GITHUB_SERVER=https://{{ github_server }}
-    - DRONE_LOGS_COLOR=true
-    - DRONE_LOGS_DEBUG=false
-    - DRONE_LOGS_PRETTY=true
-    - DRONE_LOGS_TEXT=true
-    - DRONE_LOGS_TRACE=false
-    - DRONE_REPOSITORY_FILTER={{ github_owner }}
-    - DRONE_RPC_SECRET=drone_runner_secret
-    - DRONE_SERVER_HOST={{ proxy_domain_external }}
-    - DRONE_SERVER_PROTO=https
-    - DRONE_USER_CREATE=username:{{ drone_username }},machine:false,admin:true,token:{{ github_pat }}
-    - DRONE_ADMISSION_PLUGIN_ENDPOINT=http://drone_administration:3000
-    - DRONE_ADMISSION_PLUGIN_SECRET={{ drone_administration_secret }}
-    - DRONE_CRON_INTERVAL=5m
+      - DRONE_AGENTS_ENABLED=true
+      - DRONE_DATABASE_SECRET={{ drone_database_secret }}
+      - DRONE_GIT_ALWAYS_AUTH=true # Needed in order to git clone in a pipeline step
+      - DRONE_GITHUB_CLIENT_ID={{ github_client_id }}
+      - DRONE_GITHUB_CLIENT_SECRET={{ github_client_secret }}
+      - DRONE_GITHUB_SERVER=https://{{ github_server }}
+      - DRONE_LOGS_COLOR=true
+      - DRONE_LOGS_DEBUG=false
+      - DRONE_LOGS_PRETTY=true
+      - DRONE_LOGS_TEXT=true
+      - DRONE_LOGS_TRACE=false
+      - DRONE_REPOSITORY_FILTER={{ github_owner }}
+      - DRONE_RPC_SECRET=drone_runner_secret
+      - DRONE_SERVER_HOST={{ proxy_domain_external }}
+      - DRONE_SERVER_PROTO=https
+      - DRONE_USER_CREATE=username:{{ drone_username }},machine:false,admin:true,token:{{ github_pat }}
+      - DRONE_ADMISSION_PLUGIN_ENDPOINT=http://drone_administration:3000
+      - DRONE_ADMISSION_PLUGIN_SECRET={{ drone_administration_secret }}
+      - DRONE_CRON_INTERVAL=5m
     deploy:
       replicas: 1
       update_config:
@@ -30,38 +30,38 @@ services:
       restart_policy:
         condition: on-failure
       labels:
-      - traefik.enable=true
-      - traefik.http.services.drone.loadbalancer.server.port=80
-      - traefik.http.routers.drone.tls.certresolver=step-ca
-      - traefik.http.routers.drone.rule=Host(`{{ proxy_domain_internal }}`,`{{ proxy_domain_external }}`)
-      
-      - traefik.http.middlewares.proxy-chain.ipwhitelist.sourcerange={{ trusted_ips | join(",") }}
-      #- traefik.http.middlewares.proxy-chain.ipwhitelist.ipstrategy.depth=3
+        - traefik.enable=true
+        - traefik.http.services.drone.loadbalancer.server.port=80
+        - traefik.http.routers.drone.tls.certresolver=step-ca
+        - traefik.http.routers.drone.rule=Host(`{{ proxy_domain_internal }}`,`{{ proxy_domain_external }}`)
+        
+        - traefik.http.middlewares.proxy-chain.ipwhitelist.sourcerange={{ trusted_ips | join(",") }}
+        #- traefik.http.middlewares.proxy-chain.ipwhitelist.ipstrategy.depth=3
 
-      - traefik.http.middlewares.external-redirect.redirectregex.regex=^https://{{ proxy_domain_internal }}/(.*)
-      - traefik.http.middlewares.external-redirect.redirectregex.replacement=https://{{ proxy_domain_external }}/$${1}
+        - traefik.http.middlewares.external-redirect.redirectregex.regex=^https://{{ proxy_domain_internal }}/(.*)
+        - traefik.http.middlewares.external-redirect.redirectregex.replacement=https://{{ proxy_domain_external }}/$${1}
 
-      - traefik.http.routers.drone.middlewares=proxy-chain@docker, external-redirect@docker
+        - traefik.http.routers.drone.middlewares=proxy-chain@docker, external-redirect@docker
     volumes:
-    - '{{ docker_socket }}:/var/run/docker.sock'
-    - '{{ data_dir }}/:/data/'
-    - '{{ ssl_cert_dir }}/:/etc/ssl/certs/'
-    - /etc/localtime:/etc/localtime
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
+      - /etc/localtime:/etc/localtime
+      - {{ data_dir }}:/data
     networks:
-    - {{ docker_network }}
-    - private_net
+      - {{ docker_network }}
+      - private_net
 
   administration:
     image: drone/drone-admit-members
     environment:
-    - DRONE_DEBUG=false
-    - DRONE_SECRET={{ drone_administration_secret }}
-    - DRONE_GITHUB_TOKEN={{ github_pat }}
-    - DRONE_GITHUB_TEAM={{ github_team }}
-    - DRONE_GITHUB_ORG={{ github_owner }}
-    - DRONE_GITHUB_ENDPOINT=https://{{ github_api }}
+      - DRONE_DEBUG=false
+      - DRONE_SECRET={{ drone_administration_secret }}
+      - DRONE_GITHUB_TOKEN={{ github_pat }}
+      - DRONE_GITHUB_TEAM={{ github_team }}
+      - DRONE_GITHUB_ORG={{ github_owner }}
+      - DRONE_GITHUB_ENDPOINT=https://{{ github_api }}
     volumes:
-    - '{{ ssl_cert_dir }}/:/etc/ssl/certs/'
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
     networks:
       private_net:
         aliases:
@@ -70,17 +70,17 @@ services:
   runner:
     image: drone/drone-runner-docker:1.6
     environment:
-    - DRONE_DEBUG=false
-    - DRONE_RPC_DUMP_HTTP=false
-    - DRONE_RPC_HOST={{ proxy_domain_external }}
-    - DRONE_RPC_PROTO=https
-    - DRONE_RPC_SECRET=drone_runner_secret
-    - DRONE_RUNNER_CAPACITY=4
-    - DRONE_RUNNER_NAME=Runner
-    - DRONE_RUNNER_VOLUMES=/etc/ssl/certs/:/etc/ssl/certs/,{{ config_dir }}/.ssh:/root/.ssh,{{ docker_socket }}:/var/run/docker.sock
-    - DRONE_RUNNER_ENV_FILE=/etc/drone.env
-    - DRONE_TRACE=false
-    - DRONE_CRON_INTERVAL=5m
+      - DRONE_DEBUG=false
+      - DRONE_RPC_DUMP_HTTP=false
+      - DRONE_RPC_HOST={{ proxy_domain_external }}
+      - DRONE_RPC_PROTO=https
+      - DRONE_RPC_SECRET=drone_runner_secret
+      - DRONE_RUNNER_CAPACITY=4
+      - DRONE_RUNNER_NAME=Runner
+      - DRONE_RUNNER_VOLUMES=/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt,{{ config_dir }}/.ssh:/root/.ssh,/var/run/docker.sock:/var/run/docker.sock
+      - DRONE_RUNNER_ENV_FILE=/etc/drone.env
+      - DRONE_TRACE=false
+      - DRONE_CRON_INTERVAL=5m
     deploy:
       replicas: 1
       update_config:
@@ -88,13 +88,13 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-    - '{{ docker_socket }}:/var/run/docker.sock'
-    - '{{ ssl_cert_dir }}/:/etc/ssl/certs/'
-    - /etc/localtime:/etc/localtime
-    - '{{ config_dir }}/drone.env:/etc/drone.env'
-    - '{{ config_dir }}/.ssh:/root/.ssh'
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
+      - /etc/localtime:/etc/localtime
+      - '{{ config_dir }}/drone.env:/etc/drone.env'
+      - '{{ config_dir }}/.ssh:/root/.ssh'
     networks:
-    - {{ docker_network }}
+      - {{ docker_network }}
 
 networks:
   {{ docker_network }}:
