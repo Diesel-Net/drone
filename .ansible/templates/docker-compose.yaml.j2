@@ -15,7 +15,7 @@ services:
       - DRONE_LOGS_PRETTY=true
       - DRONE_LOGS_TEXT=true
       - DRONE_LOGS_TRACE=false
-      - DRONE_REPOSITORY_FILTER={{ github_owner }}
+      #- DRONE_REPOSITORY_FILTER={{ github_owner }}
       - DRONE_RPC_SECRET=drone_runner_secret
       - DRONE_SERVER_HOST={{ proxy_domain_external }}
       - DRONE_SERVER_PROTO=https
