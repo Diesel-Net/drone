@@ -23,6 +23,8 @@ services:
       - DRONE_ADMISSION_PLUGIN_ENDPOINT=http://drone_administration:3000
       - DRONE_ADMISSION_PLUGIN_SECRET={{ drone_administration_secret }}
       - DRONE_CRON_INTERVAL=5m
+      - DRONE_WEBHOOK_ENDPOINT={{ drone_webhook_endpoint }}
+      - DRONE_WEBHOOK_SECRET={{ drone_webhook_secret }}
     deploy:
       replicas: 1
       update_config:
