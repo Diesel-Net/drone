@@ -2,11 +2,11 @@ version: '3.8'
 services:
 
   server:
-    image: docker.nexus.diesel.net/drone-nolimit:2.7.0
+    image: docker.nexus.diesel.net/drone-nolimit:2.9.1
     environment:
       - DRONE_AGENTS_ENABLED=true
       - DRONE_DATABASE_SECRET={{ drone_database_secret }}
-      - DRONE_GIT_ALWAYS_AUTH=true # Needed in order to git clone in a pipeline step
+      - DRONE_GIT_ALWAYS_AUTH=true
       - DRONE_GITHUB_CLIENT_ID={{ github_client_id }}
       - DRONE_GITHUB_CLIENT_SECRET={{ github_client_secret }}
       - DRONE_GITHUB_SERVER=https://{{ github_server }}
@@ -15,8 +15,7 @@ services:
       - DRONE_LOGS_PRETTY=true
       - DRONE_LOGS_TEXT=true
       - DRONE_LOGS_TRACE=false
-      #- DRONE_REPOSITORY_FILTER={{ github_owner }}
-      - DRONE_RPC_SECRET=drone_runner_secret
+      - DRONE_RPC_SECRET={{ drone_rpc_secret }}
       - DRONE_SERVER_HOST={{ proxy_domain_external }}
       - DRONE_SERVER_PROTO=https
       - DRONE_USER_CREATE=username:{{ drone_username }},machine:false,admin:true,token:{{ github_pat }}
@@ -37,17 +36,13 @@ services:
         - traefik.http.routers.drone.tls.certresolver=step-ca
         - traefik.http.routers.drone.rule=Host(`{{ proxy_domain_internal }}`,`{{ proxy_domain_external }}`)
 
-        # only request cert with internal domain as main
         - traefik.http.routers.drone.tls.domains[0].main={{ proxy_domain_internal }}
         - traefik.http.routers.drone.tls.domains[0].sans={{ proxy_domain_internal }}
-        
-        - traefik.http.middlewares.proxy-chain.ipwhitelist.sourcerange={{ trusted_ips | join(",") }}
-        #- traefik.http.middlewares.proxy-chain.ipwhitelist.ipstrategy.depth=3
 
         - traefik.http.middlewares.external-redirect.redirectregex.regex=^https://{{ proxy_domain_internal }}/(.*)
         - traefik.http.middlewares.external-redirect.redirectregex.replacement=https://{{ proxy_domain_external }}/$${1}
 
-        - traefik.http.routers.drone.middlewares=proxy-chain@docker, external-redirect@docker
+        - traefik.http.routers.drone.middlewares=external-redirect@docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
@@ -80,8 +75,8 @@ services:
       - DRONE_RPC_DUMP_HTTP=false
       - DRONE_RPC_HOST={{ proxy_domain_external }}
       - DRONE_RPC_PROTO=https
-      - DRONE_RPC_SECRET=drone_runner_secret
-      - DRONE_RUNNER_CAPACITY=4
+      - DRONE_RPC_SECRET={{ drone_rpc_secret }}
+      - DRONE_RUNNER_CAPACITY=8
       - DRONE_RUNNER_NAME=Runner
       - DRONE_RUNNER_VOLUMES=/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt,{{ config_dir }}/.ssh:/root/.ssh,/var/run/docker.sock:/var/run/docker.sock
       - DRONE_RUNNER_ENV_FILE=/etc/drone.env

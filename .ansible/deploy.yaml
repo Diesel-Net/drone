@@ -26,7 +26,6 @@
     - name: Copy over Drone Runner .env file for use in Drone steps and plugin containers
       copy:
         content: |
-          ANSIBLE_CONFIG=.ansible/ansible.cfg
           REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
           TZ=America/Los_Angeles
         dest: '{{ config_dir }}/drone.env'
