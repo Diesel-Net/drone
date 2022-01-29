@@ -39,14 +39,11 @@ services:
         # only request cert with internal domain as main
         - traefik.http.routers.drone.tls.domains[0].main={{ proxy_domain_internal }}
         - traefik.http.routers.drone.tls.domains[0].sans={{ proxy_domain_internal }}
-        
-        - traefik.http.middlewares.proxy-chain.ipwhitelist.sourcerange={{ trusted_ips | join(",") }}
-        - traefik.http.middlewares.proxy-chain.ipwhitelist.ipstrategy.depth=3
 
         - traefik.http.middlewares.external-redirect.redirectregex.regex=^https://{{ proxy_domain_internal }}/(.*)
         - traefik.http.middlewares.external-redirect.redirectregex.replacement=https://{{ proxy_domain_external }}/$${1}
 
-        - traefik.http.routers.drone.middlewares=proxy-chain@docker, external-redirect@docker
+        - traefik.http.routers.drone.middlewares=external-redirect@docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
