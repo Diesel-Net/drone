@@ -81,7 +81,7 @@ services:
       - DRONE_RPC_HOST={{ proxy_domain_external }}
       - DRONE_RPC_PROTO=https
       - DRONE_RPC_SECRET=drone_runner_secret
-      - DRONE_RUNNER_CAPACITY=4
+      - DRONE_RUNNER_CAPACITY=8
       - DRONE_RUNNER_NAME=Runner
       - DRONE_RUNNER_VOLUMES=/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt,{{ config_dir }}/.ssh:/root/.ssh,/var/run/docker.sock:/var/run/docker.sock
       - DRONE_RUNNER_ENV_FILE=/etc/drone.env
