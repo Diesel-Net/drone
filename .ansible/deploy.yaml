@@ -2,15 +2,16 @@
 
 - hosts: drone
   roles:
-    - common
+    - application
+    - traefik
     
   tasks:
     - include_role:
-        name: common
+        name: application
         tasks_from: make_data_dir
 
     - include_role:
-        name: common
+        name: application
         tasks_from: make_config_dir
 
     - name: Ensure ssh directory exists

@@ -49,7 +49,7 @@ services:
       - /etc/localtime:/etc/localtime
       - {{ data_dir }}:/data
     networks:
-      - {{ docker_network }}
+      - {{ traefik_network }}
       - private_net
 
   administration:
@@ -95,9 +95,9 @@ services:
       - '{{ config_dir }}/drone.env:/etc/drone.env'
       - '{{ config_dir }}/.ssh:/root/.ssh'
     networks:
-      - {{ docker_network }}
+      - {{ traefik_network }}
 
 networks:
-  {{ docker_network }}:
+  {{ traefik_network }}:
     external: true
   private_net:

@@ -1,5 +1,6 @@
-.ansible/roles/common
+.ansible/roles/application
 .ansible/roles/docker
+.ansible/roles/traefik
 **/.DS_Store
 external
 venv
