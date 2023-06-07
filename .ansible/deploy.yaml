@@ -6,6 +6,7 @@
     - traefik
     
   tasks:
+
     - include_role:
         name: application
         tasks_from: make_data_dir
