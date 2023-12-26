@@ -2,7 +2,7 @@ version: '3.8'
 services:
 
   server:
-    image: docker.nexus.diesel.net/drone-nolimit:2.17.0
+    image: docker.nexus.diesel.net/drone-nolimit:2.21.0
     environment:
       - DRONE_AGENTS_ENABLED=true
       - DRONE_DATABASE_SECRET={{ drone_database_secret }}
